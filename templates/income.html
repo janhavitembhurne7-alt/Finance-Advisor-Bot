@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Income{% endblock %}
+{% block content %}
+<header class="page-head">
+  <p class="eyebrow">Total this ledger: ₹{{ "%.0f"|format(total) }}</p>
+  <h1>Income</h1>
+</header>
+
+<section class="grid-2">
+  <div class="panel">
+    <h2>Add income</h2>
+    <form method="POST" class="form">
+      <label>Source
+        <input type="text" name="source" required placeholder="Salary, Freelancing, Other...">
+      </label>
+      <label>Amount (₹)
+        <input type="number" name="amount" step="0.01" min="0.01" required placeholder="30000">
+      </label>
+      <label>Date
+        <input type="date" name="date" value="{{ today }}">
+      </label>
+      <button type="submit" class="btn btn-primary btn-block">Add income</button>
+    </form>
+  </div>
+
+  <div class="panel">
+    <h2>Entries</h2>
+    {% if incomes %}
+    <table class="ledger-table">
+      <thead><tr><th>Source</th><th>Date</th><th>Amount</th><th></th></tr></thead>
+      <tbody>
+        {% for i in incomes %}
+        <tr>
+          <td>{{ i.source }}</td>
+          <td class="mono">{{ i.date }}</td>
+          <td class="mono">₹{{ "%.0f"|format(i.amount) }}</td>
+          <td>
+            <form method="POST" action="{{ url_for('delete_income', income_id=i.id) }}" onsubmit="return confirm('Remove this income entry?');">
+              <button type="submit" class="btn-text">Remove</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="empty-note">No income recorded yet. Add your first source on the left.</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

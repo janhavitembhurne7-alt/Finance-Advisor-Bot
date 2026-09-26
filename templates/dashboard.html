@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Overview{% endblock %}
+{% block content %}
+<header class="page-head">
+  <p class="eyebrow">{{ current_user.name }}'s ledger</p>
+  <h1>Overview</h1>
+</header>
+
+<section class="stat-row">
+  <div class="stat">
+    <span class="stat-label">Monthly income</span>
+    <span class="stat-value">₹{{ "%.0f"|format(summary.income_total) }}</span>
+  </div>
+  <div class="stat">
+    <span class="stat-label">Total expenses</span>
+    <span class="stat-value">₹{{ "%.0f"|format(summary.expense_total) }}</span>
+  </div>
+  <div class="stat {{ 'stat-negative' if summary.savings < 0 else 'stat-positive' }}">
+    <span class="stat-label">Savings</span>
+    <span class="stat-value">₹{{ "%.0f"|format(summary.savings) }}</span>
+  </div>
+</section>
+
+<section class="grid-2">
+  <div class="panel">
+    <h2>Spending by category</h2>
+    {% if summary.category_totals %}
+      <div class="cat-bars">
+        {% for cat, amt in summary.category_totals.items()|sort(attribute='1', reverse=True) %}
+        <div class="cat-bar-row">
+          <span class="cat-bar-label">{{ cat }}</span>
+          <div class="cat-bar-track">
+            <div class="cat-bar-fill" style="width: {{ (amt / summary.max_category_total * 100)|round(1) }}%"></div>
+          </div>
+          <span class="cat-bar-amount mono">₹{{ "%.0f"|format(amt) }}</span>
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="empty-note">No expenses logged yet. <a href="{{ url_for('expense') }}">Add your first expense</a>.</p>
+    {% endif %}
+  </div>
+
+  <div class="panel">
+    <h2>AI recommendation</h2>
+    <p class="ai-note">{{ recommendation }}</p>
+    <p class="disclaimer">Educational guidance only — not a substitute for a licensed financial adviser.</p>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>Suggested monthly budget</h2>
+  <div class="budget-bars">
+    <div class="budget-row">
+      <span>Needs (50%)</span><span class="mono">₹{{ "%.0f"|format(summary.budget.needs) }}</span>
+    </div>
+    <div class="budget-row">
+      <span>Wants (20%)</span><span class="mono">₹{{ "%.0f"|format(summary.budget.wants) }}</span>
+    </div>
+    <div class="budget-row">
+      <span>Savings (20%)</span><span class="mono">₹{{ "%.0f"|format(summary.budget.savings) }}</span>
+    </div>
+    <div class="budget-row">
+      <span>Emergency fund (10%)</span><span class="mono">₹{{ "%.0f"|format(summary.budget.emergency) }}</span>
+    </div>
+  </div>
+  <a href="{{ url_for('budget') }}" class="link-more">See full budget breakdown →</a>
+</section>
+{% endblock %}

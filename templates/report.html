@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Report{% endblock %}
+{% block content %}
+<header class="page-head">
+  <p class="eyebrow">Generated {{ generated_on }}</p>
+  <h1>Financial summary</h1>
+</header>
+
+<section class="panel report-panel">
+  <div class="report-line"><span>Monthly income</span><span class="mono">₹{{ "%.0f"|format(summary.income_total) }}</span></div>
+  <div class="report-line"><span>Total expenses</span><span class="mono">₹{{ "%.0f"|format(summary.expense_total) }}</span></div>
+  <div class="report-line report-total"><span>Savings</span><span class="mono">₹{{ "%.0f"|format(summary.savings) }}</span></div>
+
+  <hr class="rule">
+
+  <h2>Expense breakdown</h2>
+  {% if summary.category_totals %}
+    {% for cat, amt in summary.category_totals.items()|sort(attribute='1', reverse=True) %}
+    <div class="report-line"><span>{{ cat }}</span><span class="mono">₹{{ "%.0f"|format(amt) }}</span></div>
+    {% endfor %}
+  {% else %}
+    <p class="empty-note">No expenses recorded yet.</p>
+  {% endif %}
+
+  <hr class="rule">
+
+  <h2>AI recommendation</h2>
+  <p class="ai-note">{{ recommendation }}</p>
+  <p class="disclaimer">Educational guidance only — not a substitute for a licensed financial adviser.</p>
+</section>
+
+<button class="btn btn-primary" onclick="window.print()">Print / save as PDF</button>
+{% endblock %}

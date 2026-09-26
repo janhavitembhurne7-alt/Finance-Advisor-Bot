@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Expenses{% endblock %}
+{% block content %}
+<header class="page-head">
+  <p class="eyebrow">Total this ledger: ₹{{ "%.0f"|format(total) }}</p>
+  <h1>Expenses</h1>
+</header>
+
+<section class="grid-2">
+  <div class="panel">
+    <h2>Add expense</h2>
+    <form method="POST" class="form">
+      <label>Category
+        <select name="category" required>
+          {% for c in categories %}
+          <option value="{{ c }}">{{ c }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>Amount (₹)
+        <input type="number" name="amount" step="0.01" min="0.01" required placeholder="250">
+      </label>
+      <label>Date
+        <input type="date" name="date" value="{{ today }}">
+      </label>
+      <label>Description (optional)
+        <input type="text" name="description" placeholder="Lunch, groceries...">
+      </label>
+      <button type="submit" class="btn btn-primary btn-block">Add expense</button>
+    </form>
+  </div>
+
+  <div class="panel">
+    <h2>Entries</h2>
+    {% if expenses %}
+    <table class="ledger-table">
+      <thead><tr><th>Category</th><th>Date</th><th>Amount</th><th></th></tr></thead>
+      <tbody>
+        {% for e in expenses %}
+        <tr>
+          <td>{{ e.category }}{% if e.description %}<span class="table-sub">{{ e.description }}</span>{% endif %}</td>
+          <td class="mono">{{ e.date }}</td>
+          <td class="mono">₹{{ "%.0f"|format(e.amount) }}</td>
+          <td>
+            <form method="POST" action="{{ url_for('delete_expense', expense_id=e.id) }}" onsubmit="return confirm('Remove this expense entry?');">
+              <button type="submit" class="btn-text">Remove</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="empty-note">No expenses recorded yet. Add your first one on the left.</p>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

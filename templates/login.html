@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Log in{% endblock %}
+{% block auth_content %}
+<div class="auth-screen">
+  <div class="auth-panel">
+    <div class="brand brand-auth">
+      <span class="brand-mark">₹</span>
+      <span class="brand-name">Ledger</span>
+    </div>
+    <p class="auth-tag">Personal Finance Advisor</p>
+    <h1>Welcome back</h1>
+    <p class="auth-sub">Log in to see where your money went, and what to do about it.</p>
+    <form method="POST" class="form">
+      <label>Email
+        <input type="email" name="email" required autofocus placeholder="you@example.com">
+      </label>
+      <label>Password
+        <input type="password" name="password" required placeholder="••••••••">
+      </label>
+      <button type="submit" class="btn btn-primary btn-block">Log in</button>
+    </form>
+    <p class="auth-switch">New here? <a href="{{ url_for('register') }}">Create an account</a></p>
+  </div>
+</div>
+{% endblock %}

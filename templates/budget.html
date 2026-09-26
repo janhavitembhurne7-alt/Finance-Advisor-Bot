@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Budget{% endblock %}
+{% block content %}
+<header class="page-head">
+  <p class="eyebrow">Based on ₹{{ "%.0f"|format(summary.income_total) }} monthly income</p>
+  <h1>Budget plan</h1>
+</header>
+
+<section class="panel">
+  <h2>Recommended split</h2>
+  <div class="budget-bars">
+    <div class="budget-row">
+      <span>Needs <em>(rent, food, bills — 50%)</em></span><span class="mono">₹{{ "%.0f"|format(summary.budget.needs) }}</span>
+    </div>
+    <div class="budget-row">
+      <span>Wants <em>(shopping, entertainment — 20%)</em></span><span class="mono">₹{{ "%.0f"|format(summary.budget.wants) }}</span>
+    </div>
+    <div class="budget-row">
+      <span>Savings <em>(20%)</em></span><span class="mono">₹{{ "%.0f"|format(summary.budget.savings) }}</span>
+    </div>
+    <div class="budget-row">
+      <span>Emergency fund <em>(10%)</em></span><span class="mono">₹{{ "%.0f"|format(summary.budget.emergency) }}</span>
+    </div>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>Budget vs. actual spending</h2>
+  {% set planned = summary.budget.needs + summary.budget.wants %}
+  <div class="budget-row">
+    <span>Planned (needs + wants)</span><span class="mono">₹{{ "%.0f"|format(planned) }}</span>
+  </div>
+  <div class="budget-row">
+    <span>Actual expenses</span><span class="mono">₹{{ "%.0f"|format(summary.expense_total) }}</span>
+  </div>
+  <div class="budget-row {{ 'stat-negative' if summary.expense_total > planned else 'stat-positive' }}">
+    <span>Difference</span><span class="mono">₹{{ "%.0f"|format(planned - summary.expense_total) }}</span>
+  </div>
+  {% if summary.expense_total > planned %}
+  <p class="empty-note">You're spending above your planned needs + wants budget this period.</p>
+  {% endif %}
+</section>
+
+<section class="panel">
+  <h2>By category</h2>
+  {% if summary.category_totals %}
+  <table class="ledger-table">
+    <thead><tr><th>Category</th><th>Amount</th><th>Share of expenses</th></tr></thead>
+    <tbody>
+      {% for cat, amt in summary.category_totals.items()|sort(attribute='1', reverse=True) %}
+      <tr>
+        <td>{{ cat }}</td>
+        <td class="mono">₹{{ "%.0f"|format(amt) }}</td>
+        <td class="mono">{{ "%.0f"|format((amt / summary.expense_total * 100) if summary.expense_total else 0) }}%</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="empty-note">No expenses recorded yet.</p>
+  {% endif %}
+</section>
+{% endblock %}
